@@ -1,5 +1,9 @@
 package com.cme.test;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.cme.test.beans.ConfigDetail;
 import com.cme.test.config.Config;
 import com.cme.test.config.PropertiesConfigLoader;
@@ -83,9 +87,26 @@ public class TestApp {
 	}
 
 	private static void createAndExecuteProducer() {
+
+		List<Integer> partitions = Arrays
+				.asList(AppConstants.DEFAULT_TOPIC_PARTITIONS);
+
+		if ((configurations.getCommonProperties()
+				.getProperty(AppConstants.SOURCE_TOPIC_PARTITIONS) != null)
+				&& (!configurations.getCommonProperties()
+						.getProperty(AppConstants.SOURCE_TOPIC_PARTITIONS)
+						.isEmpty())) {
+			partitions = Arrays
+					.asList(configurations.getCommonProperties()
+							.getProperty(AppConstants.SOURCE_TOPIC_PARTITIONS)
+							.split(","))
+					.stream().map(m -> Integer.parseInt(m))
+					.collect(Collectors.toList());
+		}
+
 		producer = new ProducerFactory().getProducer(
 				TransportType.KAFKA.getValue(), configurations,
-				AppConstants.SOURCE_TOPIC);
+				AppConstants.SOURCE_TOPIC, partitions);
 		producer.executeProducer();
 	}
 

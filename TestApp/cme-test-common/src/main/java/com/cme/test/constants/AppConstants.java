@@ -10,7 +10,13 @@ public interface AppConstants {
 	
 	String SOURCE_TOPIC = "source.topic";
 	
+	String SOURCE_TOPIC_PARTITIONS = "source.topic.partitions";
+	
+	int DEFAULT_TOPIC_PARTITIONS = 0;
+	
 	String TARGET_TOPIC = "target.topic";
+	
+	String TARGET_TOPIC_PARTITIONS = "target.topic.partitions";
 	
 	String CREATE_CONSUMER = "consumer";
 	
