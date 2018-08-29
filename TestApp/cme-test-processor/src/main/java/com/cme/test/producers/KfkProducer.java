@@ -33,12 +33,15 @@ public class KfkProducer implements Producer {
 
 	@Override
 	public void executeProducer() {
-		sendMessage("source-message");
+		for(int i = 0; i < 100; i++) {
+			
+			sendMessage("source-message" + i);
+			
+		}
 	}
 
 	@Override
 	public void sendMessage(String message) {
-
 
 		try {
 

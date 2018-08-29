@@ -2,23 +2,27 @@ package com.cme.test.consumers;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collection;
 
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 
 import com.cme.test.beans.ConfigDetail;
 import com.cme.test.constants.AppConstants;
 import com.cme.test.disruptors.DisruptorFactory;
 import com.cme.test.events.MessageMetadata;
 import com.cme.test.processors.MessageProcessor;
+import com.cme.test.recovery.RecoveryService;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.util.DaemonThreadFactory;
 
 public class KfkConsumer implements Consumer {
 
-	private ConfigDetail configurations;
+	//private ConfigDetail configurations;
 
 	private KafkaConsumer<String, String> consumer;
 
@@ -28,18 +32,18 @@ public class KfkConsumer implements Consumer {
 	
 	private boolean disruptorFlag;
 	
-	private boolean reBalanceFlag;
+	private RecoveryService recoveryService;
+	
 
 	public KfkConsumer() {
 	}
 
 	public KfkConsumer(ConfigDetail configDetail, String topic, boolean disruptorFlag, boolean rebalanceFlag) {
 
-		this.configurations = configDetail;
+		//this.configurations = configDetail;
 		this.consumer = new KafkaConsumer<>(
 				configDetail.getConsumerProperties());
 		this.disruptorFlag = disruptorFlag;
-		this.reBalanceFlag = rebalanceFlag;
 		if(disruptorFlag) {
 			DisruptorFactory<MessageMetadata> factory = new DisruptorFactory<>();
 			this.disruptor = factory.getDisruptor(MessageMetadata.class,
@@ -47,7 +51,8 @@ public class KfkConsumer implements Consumer {
 			this.disruptor.handleEventsWith(new MessageProcessor(configDetail));
 		}
 		if(rebalanceFlag) {
-			this.consumer.subscribe(Arrays.asList(topic));
+			this.consumer.subscribe(Arrays.asList(topic), consumerRebalanceListener);
+			this.recoveryService = new RecoveryService(configDetail);
 		} else {
 			this.consumer.subscribe(Arrays.asList(topic));
 		}
@@ -101,8 +106,28 @@ public class KfkConsumer implements Consumer {
 				}
 
 			}
+			try {
+				Thread.sleep(10000);
+			}
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
+	
+	private final ConsumerRebalanceListener consumerRebalanceListener = new ConsumerRebalanceListener() {
+
+		@Override
+		public void onPartitionsRevoked(Collection<TopicPartition> arg0) {
+			System.out.println("Inside onPartitionsRevoked...");
+		}
+
+		@Override
+		public void onPartitionsAssigned(Collection<TopicPartition> arg0) {
+			System.out.println("Inside onPartitionsAssigned...");
+			recoveryService.recover(consumer);
+		}
+	};
 
 }
