@@ -1,12 +1,12 @@
-package com.cme.test.factories;
+package com.cme.test.producers.factory;
 
 import java.util.List;
 
-import com.cme.test.beans.ConfigDetail;
+import com.cme.test.config.beans.ConfigDetail;
 import com.cme.test.enums.TransportType;
-import com.cme.test.producers.FTLProducer;
-import com.cme.test.producers.KfkProducer;
 import com.cme.test.producers.Producer;
+import com.cme.test.producers.ftl.FTLProducer;
+import com.cme.test.producers.kafka.KfkProducer;
 
 public class ProducerFactory {
 

@@ -1,47 +1,25 @@
 package com.cme.test.processors;
 
-import com.cme.test.beans.ConfigDetail;
-import com.cme.test.constants.AppConstants;
-import com.cme.test.disruptors.DisruptorFactory;
+import com.cme.test.config.beans.DisruptorConfig;
+import com.cme.test.disruptor.DisruptorService;
 import com.cme.test.events.MessageMetadata;
-import com.cme.test.events.MessagePublish;
-import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
-import com.lmax.disruptor.util.DaemonThreadFactory;
 
-public class MessageProcessor implements EventHandler<MessageMetadata> {
-
-	private RingBuffer<MessagePublish> targetRingBuffer;
-
-	public MessageProcessor() {
+public class MessageProcessor {
+	
+	private DisruptorService disruptorService;
+	
+	public MessageProcessor(DisruptorService disruptorService) {
+		this.disruptorService = disruptorService;
 	}
 
-	public MessageProcessor(ConfigDetail configurations) {
+	public void processMessage(MessageMetadata messageMetadata) {
+		System.out.println("Message:- " + messageMetadata.getMessage()
+				+ ", partition:- " + messageMetadata.getPartition());
 		
-		DisruptorFactory<MessagePublish> disruptorFactory = new DisruptorFactory<>();
-		Disruptor<MessagePublish> targetDisruptor = disruptorFactory
-				.getDisruptor(MessagePublish.class,
-						AppConstants.RING_BUFFER_SIZE,
-						DaemonThreadFactory.INSTANCE);
-		targetDisruptor.handleEventsWith(new MessagePublisher(configurations));
-		this.targetRingBuffer = targetDisruptor.start();
+		DisruptorConfig disruptorConfig = new DisruptorConfig();
+		disruptorConfig.setMessage(messageMetadata.getMessage() + "-target");
+		disruptorConfig.setPartition(messageMetadata.getPartition());
 		
+		disruptorService.process(disruptorConfig);
 	}
-
-	@Override
-	public void onEvent(MessageMetadata event, long sequence,
-			boolean endOfBatch) throws Exception {
-
-		System.out.println("Event:- " + event.getMessage() + ", partition:- "
-				+ event.getPartition() + ", Sequence:- " + sequence
-				+ ", End of Batch:- " + endOfBatch);
-
-		long targetSeq = targetRingBuffer.next();
-		MessagePublish msgPublishEvent = targetRingBuffer.get(targetSeq);
-		msgPublishEvent.setMessage(event.getMessage());
-		msgPublishEvent.setPartition(event.getPartition());
-		targetRingBuffer.publish(targetSeq);
-	}
-
 }

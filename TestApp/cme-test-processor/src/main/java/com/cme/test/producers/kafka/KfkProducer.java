@@ -1,18 +1,14 @@
-package com.cme.test.producers;
+package com.cme.test.producers.kafka;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import com.cme.test.beans.ConfigDetail;
-import com.cme.test.constants.AppConstants;
+import com.cme.test.config.beans.ConfigDetail;
+import com.cme.test.producers.Producer;
 
 public class KfkProducer implements Producer {
-
-	private ConfigDetail configurations;
 
 	private KafkaProducer<String, String> producer;
 
@@ -24,7 +20,6 @@ public class KfkProducer implements Producer {
 	}
 
 	public KfkProducer(ConfigDetail configDetails, String topic, List<Integer> partitions) {
-		this.configurations = configDetails;
 		this.producer = new KafkaProducer<>(
 				configDetails.getProducerProperties());
 		this.topic = topic;

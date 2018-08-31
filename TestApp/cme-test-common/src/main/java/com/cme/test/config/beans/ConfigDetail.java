@@ -1,4 +1,4 @@
-package com.cme.test.beans;
+package com.cme.test.config.beans;
 
 import java.util.Properties;
 

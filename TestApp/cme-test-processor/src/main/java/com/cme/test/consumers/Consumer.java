@@ -1,6 +1,17 @@
 package com.cme.test.consumers;
 
-public interface Consumer {
+import java.util.List;
 
-	void executeConsumer();
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+
+public interface Consumer {
+	
+	void init();
+
+	void start();
+	
+	void close();
+	
+	void receiveMessages();
+	
 }
