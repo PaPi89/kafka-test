@@ -10,6 +10,8 @@ public class MessageProcessor {
 	
 	public MessageProcessor(DisruptorService disruptorService) {
 		this.disruptorService = disruptorService;
+		this.disruptorService.init();
+		this.disruptorService.start();
 	}
 
 	public void processMessage(MessageMetadata messageMetadata) {

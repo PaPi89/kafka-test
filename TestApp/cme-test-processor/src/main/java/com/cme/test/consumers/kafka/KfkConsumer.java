@@ -33,6 +33,10 @@ public class KfkConsumer implements Consumer {
 	public void init() {
 		consumer = new KafkaConsumer<>(
 				configurations.getKafkaConsumerProperties());
+		if(configurations.getDisruptorService() != null) {
+			configurations.getDisruptorService().init();
+			configurations.getDisruptorService().start();
+		}
 	}
 
 	@Override
@@ -75,6 +79,7 @@ public class KfkConsumer implements Consumer {
 				System.out.println(record.value());
 				
 				if(configurations.getDisruptorService() != null) {
+					
 					DisruptorConfig config = new DisruptorConfig();
 					config.setMessage(record.value());
 					config.setPartition(record.partition());
