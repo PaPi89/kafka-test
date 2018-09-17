@@ -10,7 +10,7 @@ import com.cme.test.producers.kafka.KfkProducer;
 
 public class ProducerFactory {
 
-	public Producer getProducer(String type, ConfigDetail configurations,
+	public static Producer getProducer(String type, ConfigDetail configurations,
 			String topic, List<Integer> partitions) {
 		Producer producer = null;
 
