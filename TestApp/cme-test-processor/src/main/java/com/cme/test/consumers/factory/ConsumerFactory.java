@@ -7,7 +7,7 @@ import com.cme.test.enums.TransportType;
 
 public class ConsumerFactory {
 
-	public Consumer getConsumer(String type, ConsumerConfig configurations) {
+	public static Consumer getConsumer(String type, ConsumerConfig configurations) {
 
 		Consumer consumer = null;
 

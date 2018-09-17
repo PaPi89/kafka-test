@@ -10,6 +10,15 @@
 		<module>cme-test-processor</module>
 		<module>cme-test-common</module>
 	</modules>
+	<properties>
+
+		<junit4.version>4.12</junit4.version>
+		<mockito-core.version>2.19.0</mockito-core.version>
+		<powermock.version>2.0.0-beta.5</powermock.version>
+		<testng.version>6.14.3</testng.version>
+		<jmockit.version>1.42</jmockit.version>
+
+	</properties>
 
 	<dependencies>
 
@@ -26,6 +35,45 @@
 			<version>3.4.2</version>
 		</dependency>
 
+
+		<!-- https://mvnrepository.com/artifact/org.testng/testng -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.jmockit/jmockit -->
+		<dependency>
+			<groupId>org.jmockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<version>${jmockit.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit4.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Mockito 2 -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito-core.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -36,6 +84,15 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.21.0</version> <!-- or some other version -->
+				<configuration>
+					<argLine>
+						-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+					</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
